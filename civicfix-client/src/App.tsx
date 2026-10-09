@@ -6,6 +6,8 @@ import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
 import { ReportIssue } from './pages/Issues/ReportIssue';
 import { IssueList } from './pages/Issues/IssueList';
+import { AdminLayout } from './components/AdminLayout';
+import { AdminIssues } from './pages/Admin/AdminIssues';
 
 function App() {
   return (
@@ -21,6 +23,17 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/report" element={<ReportIssue />} />
               <Route path="/" element={<Navigate to="/issues" replace />} />
+              
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route path="dashboard" element={<div>Admin Dashboard (Pending)</div>} />
+                <Route path="issues" element={<AdminIssues />} />
+                <Route path="issues/:id" element={<div>Issue Detail (Pending)</div>} />
+                <Route path="departments" element={<div>Departments (Pending)</div>} />
+                <Route path="staff" element={<div>Staff (Pending)</div>} />
+                <Route path="categories" element={<div>Categories (Pending)</div>} />
+                <Route path="analytics" element={<div>Analytics (Pending)</div>} />
+                <Route path="audit-logs" element={<div>Audit Logs (Pending)</div>} />
+              </Route>
             </Route>
           </Routes>
         </div>

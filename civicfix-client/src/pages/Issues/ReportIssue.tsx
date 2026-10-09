@@ -21,7 +21,7 @@ export const ReportIssue = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [, setImageFiles] = useState<File[]>([]);
 
   useEffect(() => {
     // We would fetch categories from API, for now mock it if no API available
