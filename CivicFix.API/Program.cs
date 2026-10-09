@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using CivicFix.API.Middleware;
 using CivicFix.Application.Interfaces;
@@ -41,6 +42,7 @@ builder.Services.AddIdentity<User, Role>(options =>
         options.Password.RequireLowercase = true;
         options.Password.RequireUppercase = true;
         options.Password.RequiredLength = 6;
+        options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+ ";
     })
     .AddEntityFrameworkStores<CivicFixDbContext>()
     .AddDefaultTokenProviders();
@@ -62,17 +64,12 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.SaveToken = true;
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters()
+    options.Authority = builder.Configuration["Auth0:Domain"] ?? "https://dev-kpgsud2d3hz3db6o.us.auth0.com/";
+    options.Audience = builder.Configuration["Auth0:Audience"] ?? "https://api.civicfix.local";
+    
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidAudience = validAudience,
-        ValidIssuer = validIssuer,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
+        NameClaimType = ClaimTypes.NameIdentifier
     };
 });
 

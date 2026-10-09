@@ -39,7 +39,7 @@ public class AuthService : IAuthService
 
         var result = await _userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
-            throw new Exception("User creation failed! Please check user details and try again.");
+            throw new Exception("User creation failed! " + string.Join(", ", result.Errors.Select(e => e.Description)));
 
         if (!await _roleManager.RoleExistsAsync(Role.User))
             await _roleManager.CreateAsync(new Role { Name = Role.User });
