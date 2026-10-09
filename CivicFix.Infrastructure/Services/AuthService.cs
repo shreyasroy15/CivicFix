@@ -123,9 +123,23 @@ public class AuthService : IAuthService
         };
     }
 
+    private string GetJwtSecret()
+    {
+        var secret = _configuration["JWT:Secret"];
+        if (string.IsNullOrEmpty(secret))
+        {
+            secret = Environment.GetEnvironmentVariable("JWT_SECRET");
+        }
+        if (string.IsNullOrEmpty(secret))
+        {
+            secret = "SuperSecretKeyWhichIsAtLeast32BytesLong!!";
+        }
+        return secret;
+    }
+
     private JwtSecurityToken CreateToken(List<Claim> authClaims)
     {
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]!));
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GetJwtSecret()));
         _ = int.TryParse(_configuration["JWT:TokenValidityInMinutes"], out int tokenValidityInMinutes);
         if (tokenValidityInMinutes <= 0) tokenValidityInMinutes = 60; // Default 1 hr
 
@@ -155,7 +169,7 @@ public class AuthService : IAuthService
             ValidateAudience = false, // you might want to validate the audience and issuer depending on your use case
             ValidateIssuer = false,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]!)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GetJwtSecret())),
             ValidateLifetime = false // here we are saying that we don't care about the token's expiration date
         };
 

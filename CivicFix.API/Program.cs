@@ -108,4 +108,35 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+
+    string[] roles = { Role.User, Role.Staff, Role.DepartmentAdmin, Role.SuperAdmin };
+    foreach (var r in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(r))
+        {
+            await roleManager.CreateAsync(new Role { Name = r });
+        }
+    }
+
+    var adminEmail = "admin@civicfix.local";
+    if (await userManager.FindByEmailAsync(adminEmail) == null)
+    {
+        var admin = new User 
+        { 
+            UserName = "admin", 
+            Email = adminEmail,
+            IsActive = true
+        };
+        var result = await userManager.CreateAsync(admin, "Admin@123");
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(admin, Role.SuperAdmin);
+        }
+    }
+}
+
 app.Run();
