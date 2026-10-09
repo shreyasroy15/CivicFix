@@ -39,3 +39,4 @@ npm run dev
 
 ## Security
 Secrets should be managed via environment variables and User Secrets in development, not hardcoded.
+# CivicFix
