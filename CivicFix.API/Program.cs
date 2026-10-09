@@ -82,9 +82,11 @@ builder.Services.AddSwaggerGen();
 
 // Dependency Injection
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IIssueService, IssueService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IStaffService, StaffService>();
+builder.Services.AddScoped<IAdminIssueService, AdminIssueService>();
 
 var app = builder.Build();
 
