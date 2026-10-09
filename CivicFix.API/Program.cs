@@ -64,11 +64,17 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.Authority = builder.Configuration["Auth0:Domain"] ?? "https://dev-kpgsud2d3hz3db6o.us.auth0.com/";
-    options.Audience = builder.Configuration["Auth0:Audience"] ?? "https://api.civicfix.local";
-    
-    options.TokenValidationParameters = new TokenValidationParameters
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
     {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidAudience = validAudience,
+        ValidIssuer = validIssuer,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
         NameClaimType = ClaimTypes.NameIdentifier
     };
 });
