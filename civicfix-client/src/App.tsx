@@ -9,6 +9,7 @@ import { IssueList } from './pages/Issues/IssueList';
 import { AdminLayout } from './components/AdminLayout';
 import { AdminIssues } from './pages/Admin/AdminIssues';
 import { AdminIssueDetails } from './pages/Admin/AdminIssueDetails';
+import { AdminDashboard } from './pages/Admin/AdminDashboard';
 
 function App() {
   return (
@@ -26,7 +27,7 @@ function App() {
               <Route path="/" element={<Navigate to="/issues" replace />} />
               
               <Route path="/admin" element={<AdminLayout />}>
-                <Route path="dashboard" element={<div>Admin Dashboard (Pending)</div>} />
+                <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="issues" element={<AdminIssues />} />
                 <Route path="issues/:id" element={<AdminIssueDetails />} />
                 <Route path="departments" element={<div>Departments (Pending)</div>} />

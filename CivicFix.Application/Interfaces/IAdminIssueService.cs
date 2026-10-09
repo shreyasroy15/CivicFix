@@ -13,4 +13,5 @@ public interface IAdminIssueService
     Task UpdateStatusAsync(Guid issueId, UpdateStatusDto request, Guid adminId);
     Task AddNoteAsync(Guid issueId, AddNoteDto request, Guid adminId);
     Task<IEnumerable<AuditLogDto>> GetIssueHistoryAsync(Guid issueId);
+    Task<DashboardStatsDto> GetDashboardStatsAsync(CancellationToken cancellationToken = default);
 }

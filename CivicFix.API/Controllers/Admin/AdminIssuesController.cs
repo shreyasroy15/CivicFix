@@ -141,4 +141,11 @@ public class AdminIssuesController : ControllerBase
         var history = await _adminIssueService.GetIssueHistoryAsync(id);
         return Ok(history);
     }
+
+    [HttpGet("../dashboard")]
+    public async Task<IActionResult> GetDashboard(CancellationToken cancellationToken)
+    {
+        var stats = await _adminIssueService.GetDashboardStatsAsync(cancellationToken);
+        return Ok(stats);
+    }
 }

@@ -6,6 +6,10 @@ export const adminApi = {
     const { data } = await api.get('/admin/issues', { params });
     return data;
   },
+  getDashboardStats: async () => {
+    const { data } = await api.get('/admin/dashboard');
+    return data;
+  },
   getIssueById: async (id: string) => {
     const { data } = await api.get(`/admin/issues/${id}`);
     return data;

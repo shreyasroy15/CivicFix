@@ -236,4 +236,89 @@ public class AdminIssueService : IAdminIssueService
             RejectionReason = i.RejectionReason
         };
     }
+
+    public async Task<DashboardStatsDto> GetDashboardStatsAsync(CancellationToken cancellationToken = default)
+    {
+        var now = DateTime.UtcNow;
+        var sevenDaysAgo = now.AddDays(-7);
+        var thirtyDaysAgo = now.AddDays(-30);
+
+        var statuses = await _context.Issues
+            .GroupBy(i => i.Status)
+            .Select(g => new { Status = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(k => k.Status, v => v.Count, cancellationToken);
+
+        var categories = await _context.Issues
+            .Include(i => i.Category)
+            .GroupBy(i => i.Category!.Name)
+            .Select(g => new { Category = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(k => k.Category, v => v.Count, cancellationToken);
+
+        var totalIssues = statuses.Values.Sum();
+        var criticalIssues = await _context.Issues.CountAsync(i => i.Priority == "CRITICAL", cancellationToken);
+        var last7Days = await _context.Issues.CountAsync(i => i.CreatedAt >= sevenDaysAgo, cancellationToken);
+        var last30Days = await _context.Issues.CountAsync(i => i.CreatedAt >= thirtyDaysAgo, cancellationToken);
+
+        var resolvedIssues = await _context.Issues
+            .Where(i => i.Status == "RESOLVED" && i.UpdatedAt != null)
+            .Select(i => new { i.CreatedAt, i.UpdatedAt })
+            .ToListAsync(cancellationToken);
+
+        double avgResolutionTime = 0;
+        if (resolvedIssues.Count > 0)
+        {
+            avgResolutionTime = resolvedIssues
+                .Average(i => (i.UpdatedAt!.Value - i.CreatedAt).TotalHours);
+        }
+
+        var dailyCounts = await _context.Issues
+            .Where(i => i.CreatedAt >= sevenDaysAgo)
+            .Select(i => new { i.CreatedAt.Date })
+            .GroupBy(i => i.Date)
+            .Select(g => new { Date = g.Key, Count = g.Count() })
+            .ToListAsync(cancellationToken);
+
+        // Fill in missing dates for the last 7 days
+        var dailyIssuesList = new List<DailyIssueCount>();
+        for (int i = 6; i >= 0; i--)
+        {
+            var date = now.AddDays(-i).Date;
+            var match = dailyCounts.FirstOrDefault(d => d.Date == date);
+            dailyIssuesList.Add(new DailyIssueCount
+            {
+                Date = date.ToString("yyyy-MM-dd"),
+                Count = match?.Count ?? 0
+            });
+        }
+
+        var recentIssues = await _context.Issues
+            .Include(i => i.Category)
+            .Include(i => i.Images)
+            .Include(i => i.Department)
+            .Include(i => i.AssignedStaff)
+            .Include(i => i.User)
+            .OrderByDescending(i => i.CreatedAt)
+            .Take(5)
+            .Select(i => MapToAdminDto(i))
+            .ToListAsync(cancellationToken);
+
+        return new DashboardStatsDto
+        {
+            TotalIssues = totalIssues,
+            PendingIssues = statuses.GetValueOrDefault("PENDING", 0),
+            VerifiedIssues = statuses.GetValueOrDefault("VERIFIED", 0),
+            AssignedIssues = statuses.GetValueOrDefault("ASSIGNED", 0),
+            InProgressIssues = statuses.GetValueOrDefault("IN_PROGRESS", 0),
+            ResolvedIssues = statuses.GetValueOrDefault("RESOLVED", 0),
+            RejectedIssues = statuses.GetValueOrDefault("REJECTED", 0),
+            CriticalIssues = criticalIssues,
+            IssuesLast7Days = last7Days,
+            IssuesLast30Days = last30Days,
+            AverageResolutionTimeHours = Math.Round(avgResolutionTime, 1),
+            IssuesByCategory = categories,
+            IssuesByStatus = statuses,
+            DailyIssuesLast7Days = dailyIssuesList,
+            RecentIssues = recentIssues
+        };
+    }
 }

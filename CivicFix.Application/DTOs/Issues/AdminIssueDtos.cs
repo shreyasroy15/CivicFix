@@ -57,3 +57,31 @@ public class AuditLogDto
     public DateTime Timestamp { get; set; }
     public string Details { get; set; } = string.Empty;
 }
+
+public class DashboardStatsDto
+{
+    public int TotalIssues { get; set; }
+    public int PendingIssues { get; set; }
+    public int VerifiedIssues { get; set; }
+    public int AssignedIssues { get; set; }
+    public int InProgressIssues { get; set; }
+    public int ResolvedIssues { get; set; }
+    public int RejectedIssues { get; set; }
+    public int CriticalIssues { get; set; }
+    
+    public int IssuesLast7Days { get; set; }
+    public int IssuesLast30Days { get; set; }
+    public double AverageResolutionTimeHours { get; set; }
+
+    public Dictionary<string, int> IssuesByCategory { get; set; } = new();
+    public Dictionary<string, int> IssuesByStatus { get; set; } = new();
+    
+    public List<DailyIssueCount> DailyIssuesLast7Days { get; set; } = new();
+    public List<AdminIssueDto> RecentIssues { get; set; } = new();
+}
+
+public class DailyIssueCount
+{
+    public string Date { get; set; } = string.Empty;
+    public int Count { get; set; }
+}

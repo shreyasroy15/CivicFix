@@ -68,4 +68,21 @@ public class AdminIssueServiceTests
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => service.RejectIssueAsync(issueId, request, adminId));
     }
+
+    [Fact]
+    public async Task GetDashboardStatsAsync_WithEmptyDatabase_ShouldReturnZeros()
+    {
+        // Arrange
+        var context = GetInMemoryDbContext();
+        var service = new AdminIssueService(context);
+
+        // Act
+        var stats = await service.GetDashboardStatsAsync();
+
+        // Assert
+        stats.TotalIssues.Should().Be(0);
+        stats.AverageResolutionTimeHours.Should().Be(0);
+        stats.DailyIssuesLast7Days.Should().HaveCount(7);
+        stats.RecentIssues.Should().BeEmpty();
+    }
 }
