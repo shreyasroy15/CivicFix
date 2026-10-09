@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="CivicFix.API/CivicFix.API.csproj" />
+  <Project Path="CivicFix.Application/CivicFix.Application.csproj" />
+  <Project Path="CivicFix.Domain/CivicFix.Domain.csproj" />
+  <Project Path="CivicFix.Infrastructure/CivicFix.Infrastructure.csproj" />
+  <Project Path="CivicFix.Tests/CivicFix.Tests.csproj" />
+</Solution>

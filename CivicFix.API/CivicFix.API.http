@@ -1,0 +1,6 @@
+@CivicFix.API_HostAddress = http://localhost:5042
+
+GET {{CivicFix.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
